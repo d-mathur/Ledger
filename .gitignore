@@ -1,1 +1,12 @@
 token.txt
+
+package-lock.json
+package.json
+
+node_modules/
+
+firebase.json
+.firebaserc
+public/404.html
+
+.firebase/

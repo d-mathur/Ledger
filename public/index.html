@@ -498,17 +498,17 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase -->
+<!-- Firebase Realtime Database -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
-    getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc,
-    query, orderBy, onSnapshot, serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    getDatabase, ref, push, update, remove, onValue, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBDJgsPLeV6oSox_mjtAeg_tMRevuRI3Fk",
     authDomain: "record-book-4a3d3.firebaseapp.com",
+    databaseURL: "https://record-book-4a3d3-default-rtdb.firebaseio.com",
     projectId: "record-book-4a3d3",
     storageBucket: "record-book-4a3d3.firebasestorage.app",
     messagingSenderId: "64014342179",
@@ -517,19 +517,22 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  const db = getDatabase(app);
 
   let allEntries = [];
   let currentFilter = 'pending';
 
   // Set today's date by default
-  const dateInput = document.getElementById('entryDate');
-  dateInput.value = new Date().toISOString().split('T')[0];
+  document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
 
   // Real-time listener
-  const q = query(collection(db, 'entries'), orderBy('createdAt', 'desc'));
-  onSnapshot(q, (snapshot) => {
-    allEntries = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  onValue(ref(db, 'entries'), (snapshot) => {
+    const data = snapshot.val();
+    allEntries = data
+      ? Object.entries(data)
+          .map(([id, val]) => ({ id, ...val }))
+          .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+      : [];
     renderEntries();
     updateTotal();
   });
@@ -551,10 +554,10 @@
     btn.textContent = 'Adding…';
 
     try {
-      await addDoc(collection(db, 'entries'), {
+      await push(ref(db, 'entries'), {
         name, amount, date, description: desc,
         done: false,
-        createdAt: serverTimestamp()
+        createdAt: Date.now()
       });
       document.getElementById('personName').value = '';
       document.getElementById('amount').value = '';
@@ -571,15 +574,14 @@
 
   // Mark Done / Undo
   window.toggleDone = async (id, currentState) => {
-    const ref = doc(db, 'entries', id);
-    await updateDoc(ref, { done: !currentState });
+    await update(ref(db, `entries/${id}`), { done: !currentState });
     showToast(currentState ? '↩️ Marked pending' : '✅ Settled!');
   };
 
   // Delete
   window.deleteEntry = async (id) => {
     if (!confirm('Delete this entry?')) return;
-    await deleteDoc(doc(db, 'entries', id));
+    await remove(ref(db, `entries/${id}`));
     showToast('🗑️ Deleted');
   };
 
@@ -646,7 +648,6 @@
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // Toast
   window.showToast = (msg) => {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -654,9 +655,8 @@
     setTimeout(() => t.classList.remove('show'), 2500);
   };
 
-  // Enter key to add
   document.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && (e.target.tagName === 'INPUT')) window.addEntry();
+    if (e.key === 'Enter' && e.target.tagName === 'INPUT') window.addEntry();
   });
 </script>
 </body>
