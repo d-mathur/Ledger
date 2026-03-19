@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Udhar Book</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #F5F0E8;
+      --warm-white: #FDFBF7;
+      --ink: #1A1410;
+      --ink-light: #4A3F35;
+      --ink-faint: #9A8F85;
+      --gold: #C9922A;
+      --gold-light: #E8B84B;
+      --red: #C0392B;
+      --green: #27AE60;
+      --border: #E2D9CC;
+      --shadow: 0 2px 20px rgba(26,20,16,0.08);
+      --shadow-lg: 0 8px 40px rgba(26,20,16,0.14);
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 20% 0%, rgba(201,146,42,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 100%, rgba(201,146,42,0.05) 0%, transparent 60%);
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 28px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 30px rgba(26,20,16,0.3);
+    }
+
+    .brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--cream);
+    }
+
+    .brand p {
+      font-size: 0.72rem;
+      color: var(--gold-light);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .total-badge {
+      text-align: right;
+    }
+
+    .total-badge .label {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      color: #888;
+    }
+
+    .total-badge .amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--gold-light);
+      line-height: 1.1;
+    }
+
+    /* ── Main ── */
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 36px 20px 80px;
+    }
+
+    /* ── Add Entry Card ── */
+    .add-card {
+      background: var(--warm-white);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 36px;
+      border: 1px solid var(--border);
+      animation: slideDown 0.4s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .add-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .add-card h2::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      background: var(--gold);
+      border-radius: 2px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+
+    input, textarea {
+      background: var(--cream);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,146,42,0.12);
+    }
+
+    textarea { resize: vertical; min-height: 72px; }
+
+    .btn-add {
+      margin-top: 18px;
+      width: 100%;
+      background: var(--ink);
+      color: var(--cream);
+      border: none;
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-add:hover { background: #2D2520; }
+    .btn-add:active { transform: scale(0.99); }
+    .btn-add:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Section Header ── */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .count-badge {
+      background: var(--ink);
+      color: var(--cream);
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Filter Tabs ── */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 8px 18px;
+      border-radius: 30px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--ink-light);
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      background: var(--ink);
+      color: var(--cream);
+      border-color: var(--ink);
+    }
+
+    /* ── Entry Cards ── */
+    .entries-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .entry-card {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.3s;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .entry-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .entry-card.done {
+      opacity: 0.55;
+      background: #F9F7F3;
+    }
+
+    .entry-card.done .entry-amount { color: var(--green); }
+    .entry-card.done .person-name { text-decoration: line-through; color: var(--ink-faint); }
+
+    .entry-info {}
+
+    .entry-top {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .person-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .entry-amount {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--red);
+    }
+
+    .entry-desc {
+      font-size: 0.85rem;
+      color: var(--ink-light);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .entry-date {
+      font-size: 0.72rem;
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+    }
+
+    .entry-done-badge {
+      font-size: 0.65rem;
+      background: #E8F8EE;
+      color: var(--green);
+      border: 1px solid #B8E4C9;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .entry-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .btn-done {
+      background: #E8F8EE;
+      color: var(--green);
+      border: 1.5px solid #B8E4C9;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-done:hover { background: #D4F0E0; }
+
+    .btn-undo {
+      background: transparent;
+      color: var(--ink-faint);
+      border: 1.5px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .btn-undo:hover { border-color: var(--ink-light); color: var(--ink-light); }
+
+    .btn-delete {
+      background: transparent;
+      color: #E0B0AA;
+      border: none;
+      font-size: 0.75rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      transition: color 0.2s;
+    }
+
+    .btn-delete:hover { color: var(--red); }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--ink-faint);
+    }
+
+    .empty-state .icon {
+      font-size: 2.5rem;
+      margin-bottom: 14px;
+      opacity: 0.5;
+    }
+
+    .empty-state p {
+      font-size: 0.9rem;
+    }
+
+    /* ── Loading ── */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--ink-faint);
+      font-size: 0.9rem;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--ink);
+      color: var(--cream);
+      padding: 12px 22px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Responsive ── */
+    @media (max-width: 500px) {
+      header { padding: 20px; }
+      .brand h1 { font-size: 1.4rem; }
+      .total-badge .amount { font-size: 1.4rem; }
+      main { padding: 24px 14px 60px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>📒 Udhar Book</h1>
+    <p>Personal Ledger</p>
+  </div>
+  <div class="total-badge">
+    <div class="label">Pending Total</div>
+    <div class="amount" id="totalAmount">₹0</div>
+  </div>
+</header>
+
+<main>
+  <!-- Add Entry -->
+  <div class="add-card">
+    <h2>New Entry</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Person's Name</label>
+        <input type="text" id="personName" placeholder="e.g. Rahul" autocomplete="off"/>
+      </div>
+      <div class="form-group">
+        <label>Amount (₹)</label>
+        <input type="number" id="amount" placeholder="e.g. 500" min="0"/>
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="entryDate"/>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" id="description" placeholder="e.g. Dinner, auto fare…"/>
+      </div>
+    </div>
+    <button class="btn-add" id="addBtn" onclick="addEntry()">
+      + Add to Ledger
+    </button>
+  </div>
+
+  <!-- Entries -->
+  <div class="section-header">
+    <h2>Entries</h2>
+    <span class="count-badge" id="countBadge">0 pending</span>
+  </div>
+
+  <div class="filter-tabs">
+    <button class="tab active" onclick="setFilter('pending', this)">Pending</button>
+    <button class="tab" onclick="setFilter('done', this)">Settled</button>
+    <button class="tab" onclick="setFilter('all', this)">All</button>
+  </div>
+
+  <div class="entries-list" id="entriesList">
+    <div class="loading">Loading entries…</div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase Realtime Database -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getDatabase, ref, push, update, remove, onValue, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBDJgsPLeV6oSox_mjtAeg_tMRevuRI3Fk",
+    authDomain: "record-book-4a3d3.firebaseapp.com",
+    databaseURL: "https://record-book-4a3d3-default-rtdb.firebaseio.com",
+    projectId: "record-book-4a3d3",
+    storageBucket: "record-book-4a3d3.firebasestorage.app",
+    messagingSenderId: "64014342179",
+    appId: "1:64014342179:web:7a8611c9aaf471b91e7996",
+    measurementId: "G-Z3NYEBCNWJ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  let allEntries = [];
+  let currentFilter = 'pending';
+
+  // Set today's date by default
+  document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+
+  // Real-time listener
+  onValue(ref(db, 'entries'), (snapshot) => {
+    const data = snapshot.val();
+    allEntries = data
+      ? Object.entries(data)
+          .map(([id, val]) => ({ id, ...val }))
+          .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+      : [];
+    renderEntries();
+    updateTotal();
+  });
+
+  // Add Entry
+  window.addEntry = async () => {
+    const name = document.getElementById('personName').value.trim();
+    const amount = parseFloat(document.getElementById('amount').value);
+    const date = document.getElementById('entryDate').value;
+    const desc = document.getElementById('description').value.trim();
+
+    if (!name || !amount || !date) {
+      showToast('⚠️ Name, amount & date are required');
+      return;
+    }
+
+    const btn = document.getElementById('addBtn');
+    btn.disabled = true;
+    btn.textContent = 'Adding…';
+
+    try {
+      await push(ref(db, 'entries'), {
+        name, amount, date, description: desc,
+        done: false,
+        createdAt: Date.now()
+      });
+      document.getElementById('personName').value = '';
+      document.getElementById('amount').value = '';
+      document.getElementById('description').value = '';
+      document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+      showToast('✅ Entry added!');
+    } catch (e) {
+      showToast('❌ Error: ' + e.message);
+    }
+
+    btn.disabled = false;
+    btn.textContent = '+ Add to Ledger';
+  };
+
+  // Mark Done / Undo
+  window.toggleDone = async (id, currentState) => {
+    await update(ref(db, `entries/${id}`), { done: !currentState });
+    showToast(currentState ? '↩️ Marked pending' : '✅ Settled!');
+  };
+
+  // Delete
+  window.deleteEntry = async (id) => {
+    if (!confirm('Delete this entry?')) return;
+    await remove(ref(db, `entries/${id}`));
+    showToast('🗑️ Deleted');
+  };
+
+  // Filter
+  window.setFilter = (filter, el) => {
+    currentFilter = filter;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderEntries();
+  };
+
+  function renderEntries() {
+    const list = document.getElementById('entriesList');
+    let filtered = allEntries;
+    if (currentFilter === 'pending') filtered = allEntries.filter(e => !e.done);
+    if (currentFilter === 'done') filtered = allEntries.filter(e => e.done);
+
+    const pending = allEntries.filter(e => !e.done);
+    document.getElementById('countBadge').textContent = `${pending.length} pending`;
+
+    if (filtered.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">${currentFilter === 'done' ? '🎉' : '📭'}</div>
+          <p>${currentFilter === 'done' ? 'No settled entries yet.' : 'No pending entries. All clear!'}</p>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(entry => `
+      <div class="entry-card ${entry.done ? 'done' : ''}">
+        <div class="entry-info">
+          <div class="entry-top">
+            <span class="person-name">${escHtml(entry.name)}</span>
+            <span class="entry-amount">₹${Number(entry.amount).toLocaleString('en-IN')}</span>
+            ${entry.done ? '<span class="entry-done-badge">✓ Settled</span>' : ''}
+          </div>
+          ${entry.description ? `<div class="entry-desc">${escHtml(entry.description)}</div>` : ''}
+          <div class="entry-date">${formatDate(entry.date)}</div>
+        </div>
+        <div class="entry-actions">
+          ${!entry.done
+            ? `<button class="btn-done" onclick="toggleDone('${entry.id}', false)">✓ Done</button>`
+            : `<button class="btn-undo" onclick="toggleDone('${entry.id}', true)">Undo</button>`
+          }
+          <button class="btn-delete" onclick="deleteEntry('${entry.id}')">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function updateTotal() {
+    const total = allEntries.filter(e => !e.done).reduce((s, e) => s + Number(e.amount), 0);
+    document.getElementById('totalAmount').textContent = '₹' + total.toLocaleString('en-IN');
+  }
+
+  function formatDate(str) {
+    if (!str) return '';
+    const d = new Date(str + 'T00:00:00');
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  window.showToast = (msg) => {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  };
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.tagName === 'INPUT') window.addEntry();
+  });
+</script>
+</body>
+</html>
